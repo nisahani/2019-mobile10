@@ -6,6 +6,8 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,12 +31,34 @@ public class HomeFragment extends Fragment {
 	private int scoreDefault = 0;
 
 	public HomeFragment() {
-		// Required empty public constructor
+		// Required empty public constructor untuk publisher dari observe pattern
+		scoreDuaHome.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				sharedScore.setScoreHome(scoreDefault + 2);
+			}
+		});
+
+		scoreTigaHome.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				sharedScore.setScoreHome(scoreDefault + 3);
+			}
+		});
+
+		scoreSatuHome.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				sharedScore.setScoreHome(scoreDefault + 1);
+			}
+		});
 	}
 
 	@Override
 	public void onCreate(@Nullable Bundle savedInstanceState) {
+
 		super.onCreate(savedInstanceState);
+		sharedScore = ViewModelProviders.of(requireActivity()).get(SharedScore.class);
 	}
 
 	@Override
@@ -53,5 +77,14 @@ public class HomeFragment extends Fragment {
 		scoreSatuHome = view.findViewById(R.id.scoreSatuHome);
 
 		// Tambahkan logic tombol di bagian bawah ini
+		// OBSERVER PATTERN = fungsi ketika perubahan UI akan mendapatkan nootifikasi data
+		// tanpa perlu melakukan proses pengambilan data
+		sharedScore.getScoreHome().observe(requireActivity(), new Observer<Integer>() {
+			@Override
+			public void onChanged(Integer score) {
+				scoreHome.setText(String.valueOf(score));
+				scoreDefault = score;
+			}
+		});
 	}
 }
